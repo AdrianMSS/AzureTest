@@ -461,6 +461,7 @@ exports.getAll = function(io) {
 };
 
 exports.mergeEntity = function(req,res) {
+  var today = new Date().addHours(-6);
   var chat = {
     PartitionKey: {'_':req.body.PartitionKey},
     RowKey: {'_': req.body.RowKey},
@@ -468,7 +469,8 @@ exports.mergeEntity = function(req,res) {
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
+
   
   console.log(chat);
-  res.send(200,req.body);
+  res.send(200,chat);
 }
