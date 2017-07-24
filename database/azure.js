@@ -473,7 +473,8 @@ exports.mergeEntity = function(req,res) {
     if(!error) {
       if(result.entries.length != 0){
         console.log(result.entries[0]);
-        var nowCount = (result.entries[0].count || 1);
+        var nowCount = 1;
+        if(! isNaN(result.entries[0].count)) nowCount = result.entries[0].count;
         nowCount++;
         chat['count'] = {'_':nowCount};
         tableSvc.mergeEntity('chatsTable',chat, function(error2, result2, response2){
