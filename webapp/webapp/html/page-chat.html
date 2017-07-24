@@ -1,0 +1,13 @@
+<img class="full-logo" src="./img/logo.png"/>
+<ion-content padding class="chatDiv">
+  <ion-list>
+  	<div ng-repeat="message in messages track by $index">
+  		<div class="chatMsg" ng-if="message.type == type">
+        	<angular2-component ng-if="message.chat"> {{message.msg}} </angular2-component>
+	    	<angular2-component ng-if="message.img"> <img src={{message.msg}} class="uploadImg"> </angular2-component>
+	        <angular2-component ng-if="message.location"> Emergencia de {{message.type}} </angular2-component>
+	    </div>
+	    <br>
+    </div>
+  </ion-list>
+</ion-content>

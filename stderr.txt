@@ -1,0 +1,7 @@
+events.js:160
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: write EIO
+    at exports._errnoException (util.js:1022:11)
+    at WriteWrap.afterWrite (net.js:801:14)

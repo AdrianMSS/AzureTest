@@ -1,0 +1,27 @@
+<!-- page-login.html -->
+<img class="full-logo" src="./img/logo.png"/>
+<br>
+<div id="map"></div>
+<div id="class" ng-repeat="marker in markers | orderBy : 'title'">
+    <a href="#" ng-click="openInfoWindow($event, marker)">{{marker.title}}</a>
+</div>
+<div class="loginDiv">
+  <h3 style="color:#6D6E71">Notificaciones</h3>
+  <div class="chatOverflow">
+    <div ng-repeat="message in messages track by $index">
+      <div class="notifyDiv" ng-click="chatEmergency(message.type)">
+        <angular2-component ng-if="message.type=='derrumbe'"> <img src="img/e3.png"> </angular2-component>
+        <angular2-component ng-if="message.type=='inundación'"> <img src="img/e4.png"> </angular2-component>
+        <angular2-component ng-if="message.type=='incendio'"> <img src="img/e5.png"> </angular2-component>
+        <angular2-component ng-if="message.type=='volcán'"> <img src="img/e6.png"> </angular2-component>
+        <angular2-component ng-if="message.type=='médica'"> <img src="img/e1.png"> </angular2-component>
+        <angular2-component ng-if="message.type=='delito'"> <img src="img/e2.png"> </angular2-component>
+        Nueva alerta de {{message.type}}<br>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="chartDiv">
+  <div google-chart chart="myChartObject" style="height:200px; width:100%;"></div>
+</div>

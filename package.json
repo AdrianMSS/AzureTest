@@ -1,0 +1,17 @@
+{
+  "name": "nodechat",
+  "version": "1.0.0",
+  "description": "Server to the Node Chat",
+  "main": "server.js",
+  "dependencies": {
+   "socket.io":"^1.7.2",
+    "express": "3.x",
+    "mongodb": "*",
+    "cookie-parser": "*",
+    "cors": "*",
+    "body-parser": "*",
+    "azure-storage": "*"
+  },
+  "author": "Adrian MSS",
+  "license": "ISC"
+}

@@ -1,0 +1,6 @@
+Server Started
+Connected to the "SOS" database
+[0mGET /button [36m304 [0m8.662 ms - -[0m
+{ boton: 'Postman' }
+[0mPOST /button [32m200 [0m21.228 ms - 24[0m
+[0mGET /button [32m200 [0m1.157 ms - 24[0m
