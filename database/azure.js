@@ -224,7 +224,6 @@ exports.insertRec = function(msg){
    newId = msg.id || chatId,
    newChat = ''+chatId;
   newId = ''+newId;
-  var city = "Santa Ana";
   
   var chat = {
     PartitionKey: {'_':chatDate},
@@ -237,7 +236,7 @@ exports.insertRec = function(msg){
     long:{'_':msg.long},
     position:{'_':msg.position},
     status:{'_':1},
-    city:{'_':city},
+    city:{'_':msg.city},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -319,11 +318,10 @@ exports.insertLocation = function(msg, io){
 
 exports.insertMsg = function(msg){
   var today = new Date().addHours(-6),
-   chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
+   chatDate = msg.parent || (today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()),
    newId = msg.id || chatId,
    newChat = ''+chatId;
   newId = ''+newId;
-  var city = "Santa Ana";
   
   var chat = {
     PartitionKey: {'_':chatDate},
@@ -336,32 +334,43 @@ exports.insertMsg = function(msg){
     long:{'_':msg.long},
     position:{'_':msg.position},
     status:{'_':1},
-    city:{'_':city},
+    city:{'_':msg.city},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
-  var Chat2 = {
-        PartitionKey:chatDate,
-        RowKey: newChat,
-        user:msg.user,
-        msg:msg.msg,
-        id: newId,
-        type:msg.type,
-        lat:msg.lat,
-        long:msg.long,
-        position:msg.position,
-        status:1,
-        city:city
-  }
-  todayChats.push(Chat2);
-
   chatId++;
-  tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
-    if(!error){
-      console.log(result);
+  tableSvc.insertEntity('chatsTable',chat, function (error3, result3, response3) {
+    if(!error3){
+      var chat2 = {
+        PartitionKey: {'_':chatDate},
+        RowKey: {'_': newChat},
+        msg: {'_':msg.msg},
+        dueDate: {'_':today, '$':'Edm.DateTime'}
+      };
+
+      var query = new azure.TableQuery()
+        .where('PartitionKey eq ?', [chatDate] ).and('RowKey eq ?', newChat);
+
+      tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
+        if(!error) {
+          if(result.entries.length != 0){
+            var nowCount = 1;
+            if(result.entries[0].count) nowCount = result.entries[0].count._;
+            nowCount++;
+            chat['count'] = {'_':nowCount};
+            tableSvc.mergeEntity('chatsTable',chat2, function(error2, result2, response2){
+              if(!error2) {
+              }
+              else{
+                console.log(error2);
+              }
+            });
+          }
+        }
+      });
     }
     else{
-      console.log(error);
+      console.log(error3);
     }
   });
 }
