@@ -472,14 +472,15 @@ exports.mergeEntity = function(req,res) {
   tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
     if(!error) {
       if(result.entries.length != 0){
-        console.log(result.entries[0]);
+        console.log(result.entries[0].count);
         var nowCount = 1;
         if(! isNaN(result.entries[0].count)) nowCount = result.entries[0].count;
         nowCount++;
+        console.log(nowCount);
         chat['count'] = {'_':nowCount};
         tableSvc.mergeEntity('chatsTable',chat, function(error2, result2, response2){
           if(!error2) {
-            console.log(result2);
+            //console.log(result2);
             res.send(200, result2);
           }
           else{
