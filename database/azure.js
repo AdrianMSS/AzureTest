@@ -489,6 +489,5 @@ exports.mergeEntity = function(req,res) {
         });
       }
     }
-  }
-  
+  });
 }
