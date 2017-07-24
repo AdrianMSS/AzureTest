@@ -469,8 +469,15 @@ exports.mergeEntity = function(req,res) {
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
-
+  tableSvc.replaceEntity('chatsTable',chat, function(error, result, response){
+    if(!error) {
+            console.log(result);
+            res.send(200, result);
+    }
+    else{
+      console.log(error);
+      res.send(400,error);
+    }
+  });
   
-  console.log(chat);
-  res.send(200,chat);
 }
