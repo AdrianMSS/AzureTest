@@ -91,39 +91,36 @@ exports.getToday = function(req, res) {
 
 
 exports.signUser = function(req, res) {
-  console.log(req.body);
   var query = new azure.TableQuery()
     .where('identificator eq ?', [req.body.identificator] );
 
   tableSvc.queryEntities('usersTable',query, null, function(error, result, response){
     if(!error) {
       if(result.entries.length != 0){
-	console.log(result.entries[0].code._);
-	console.log(req.body.code);
-	if(result.entries[0].code._ == req.body.code){
-	  var today = new Date().addHours(-6),
-	     updatedTask = {
-	    PartitionKey: {'_':'1'},
-    	    RowKey: {'_': result.entries[0].RowKey._},
-    	    name: {'_':req.body.name},
-    	    identificator: {'_':req.body.identificator},
-	    phone: {'_':req.body.phone},
-	    email: {'_':req.body.email},
-	    code: {'_':req.body.code},
-	    barrio: {'_':req.body.barrio},
-	    signed: {'_':true},
-	    dueDate: {'_':today, '$':'Edm.DateTime'}
-  	  };
-	  tableSvc.replaceEntity('usersTable',updatedTask, function(error2, result2, response2){
-	    if(!error2) {
-              res.send(200, result.entries[0].RowKey._);
-	    }
-	  });
-	}
-	else{
-	  console.log("Código Erroneo");
-	  res.send(400,"Código Erroneo");
-	}
+      	if(result.entries[0].code._ == req.body.code){
+      	  var today = new Date().addHours(-6),
+      	     updatedTask = {
+      	    PartitionKey: {'_':'1'},
+          	    RowKey: {'_': result.entries[0].RowKey._},
+          	    name: {'_':req.body.name},
+          	    identificator: {'_':req.body.identificator},
+      	    phone: {'_':req.body.phone},
+      	    email: {'_':req.body.email},
+      	    code: {'_':req.body.code},
+      	    barrio: {'_':req.body.barrio},
+      	    signed: {'_':true},
+      	    dueDate: {'_':today, '$':'Edm.DateTime'}
+        	  };
+      	  tableSvc.replaceEntity('usersTable',updatedTask, function(error2, result2, response2){
+      	    if(!error2) {
+                    res.send(200, result.entries[0].RowKey._);
+      	    }
+      	  });
+      	}
+      	else{
+      	  console.log("Código Erroneo");
+      	  res.send(400,"Código Erroneo");
+      	}
       }
       else{
         console.log("Ninguno");
@@ -466,18 +463,32 @@ exports.mergeEntity = function(req,res) {
     PartitionKey: {'_':req.body.PartitionKey},
     RowKey: {'_': req.body.RowKey},
     msg: {'_':req.body.msg},
-    dueDate: {'_':today, '$':'Edm.DateTime'}
+    dueDate: {'_':today, '$':'Edm.DateTime'},
+    count: 0
   };
 
-  tableSvc.mergeEntity('chatsTable',chat, function(error, result, response){
+  var query = new azure.TableQuery()
+    .where('PartitionKey eq ?', [req.body.PartitionKey] ).and('RowKey eq ?', req.body.RowKey);
+
+  tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
     if(!error) {
-            console.log(result);
-            res.send(200, result);
+      if(result.entries.length != 0){
+        console.log(result.entries[0]);
+        var nowCount = (result.entries[0].count || 1);
+        nowCount++;
+        chat.count = nowCount;
+        tableSvc.mergeEntity('chatsTable',chat, function(error2, result2, response2){
+          if(!error2) {
+            console.log(result2);
+            res.send(200, result2);
+          }
+          else{
+            console.log(error2);
+            res.send(400,error2);
+          }
+        });
+      }
     }
-    else{
-      console.log(error);
-      res.send(400,error);
-    }
-  });
+  }
   
 }
