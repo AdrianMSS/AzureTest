@@ -461,6 +461,14 @@ exports.getAll = function(io) {
 };
 
 exports.mergeEntity = function(req,res) {
-  console.log(req.body);
+  var chat = {
+    PartitionKey: {'_':req.body.PartitionKey},
+    RowKey: {'_': req.body.RowKey},
+    msg: {'_':req.body.msg},
+    dueDate: {'_':today, '$':'Edm.DateTime'}
+  };
+
+  
+  console.log(chat);
   res.send(200,req.body);
 }
