@@ -36,6 +36,7 @@ app.get('/chats', azureServices.getChats);
 app.get('/today', azureServices.getToday);
 app.post('/userchats', azureServices.userChats);
 
+app.put('/entity', dbServices.mergeEntity);
 
 app.get('/now', azureServices.getNow);
 

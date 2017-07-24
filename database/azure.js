@@ -460,3 +460,7 @@ exports.getAll = function(io) {
   });
 };
 
+exports.mergeEntity = function(req,res) {
+  console.log(req.body);
+  res.send(200,req.body);
+}
