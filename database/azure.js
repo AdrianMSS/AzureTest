@@ -463,8 +463,7 @@ exports.mergeEntity = function(req,res) {
     PartitionKey: {'_':req.body.PartitionKey},
     RowKey: {'_': req.body.RowKey},
     msg: {'_':req.body.msg},
-    dueDate: {'_':today, '$':'Edm.DateTime'},
-    count: 0
+    dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
   var query = new azure.TableQuery()
@@ -476,7 +475,7 @@ exports.mergeEntity = function(req,res) {
         console.log(result.entries[0]);
         var nowCount = (result.entries[0].count || 1);
         nowCount++;
-        chat.count = nowCount;
+        chat['count'] = {'_':nowCount};
         tableSvc.mergeEntity('chatsTable',chat, function(error2, result2, response2){
           if(!error2) {
             console.log(result2);
