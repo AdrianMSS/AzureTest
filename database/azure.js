@@ -271,6 +271,7 @@ exports.insertLocation = function(msg, io){
    chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
    newId = msg.id || chatId;
   msg.id = parseInt(newId);
+  msg['parent'] = chatDate;
   newId = ''+newId;
   io.emit('alert', msg);
   
@@ -290,21 +291,6 @@ exports.insertLocation = function(msg, io){
     count:{'_':1},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
-
-  var Chat2 = {
-        PartitionKey:chatDate,
-        RowKey: newId,
-        user:msg.user,
-        msg:null,
-        id: newId,
-        type:msg.type,
-        lat:msg.lat,
-        long:msg.long,
-        position:msg.position,
-        status:1,
-        city:msg.city
-  }
-  todayChats.push(Chat2);
 
   chatId++;
   tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
