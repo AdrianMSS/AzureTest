@@ -401,15 +401,16 @@ exports.getUser = function(id,io) {
     	
     	var amount = response.body.value.length;
     	var msg = {user:id,amount:amount};
-    	response.body.value.forEach(function(element, index){
-		var newChat = "Alerta";
-		if(element.msg != undefined)newChat=element.msg.substr(0,15);
-        	msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city}
-      	});
-    	console.log(msg);
-    	io.emit("chats",msg);
+      var arrayReverse = response.body.value.reverse();
+    	arrayReverse.forEach(function(element, index){
+  		  var newChat = "Alerta";
+  		  if(element.msg != undefined)newChat=element.msg.substr(0,15);
+        msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city}
+      });
+      console.log(msg);
+      io.emit("chats",msg);
     }
-	else{
+  	else{
       res.send(400, error);
     }
   });
