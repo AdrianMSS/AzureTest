@@ -375,11 +375,11 @@ exports.userChats = function(req,res){
     if(!error) {
       var amount = response.body.value.length;
         var msg = {};
-        response.body.value.forEach(function(element, index){
-                var newChat = "Alerta";
-                if(!element.first)newChat=element.msg.substr(0,15);
-                msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,img:element.img, msg:element.msg, count:element.count}
-
+        var reverseChats = response.body.value.reverse();
+        reverseChats.forEach(function(element, index){
+          var newChat = "Alerta";
+          if(!element.first)newChat=element.msg.substr(0,15);
+          msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,img:element.img, msg:element.msg, count:element.count}
         });
         console.log(msg);
         res.send(200,{"chats":msg});
@@ -401,8 +401,7 @@ exports.getUser = function(id,io) {
     	
     	var amount = response.body.value.length;
     	var msg = {user:id,amount:amount};
-      var arrayReverse = response.body.value.reverse();
-    	arrayReverse.forEach(function(element, index){
+      response.body.value.forEach(function(element, index){
   		  var newChat = "Alerta";
   		  if(element.msg != undefined)newChat=element.msg.substr(0,15);
         msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city}
