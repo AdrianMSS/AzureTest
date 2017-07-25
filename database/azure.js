@@ -387,7 +387,7 @@ exports.userChats = function(req,res){
         response.body.value.forEach(function(element, index){
                 var newChat = "Alerta";
                 if(!element.first)newChat=element.msg.substr(0,15);
-                msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,img:element.img, msg:element.msg}
+                msg[index] = {PartitionKey:element.PartitionKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,img:element.img, msg:element.msg, count:element.count}
 
         });
         console.log(msg);
