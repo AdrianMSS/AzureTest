@@ -304,11 +304,15 @@ exports.insertLocation = function(msg, io){
 }
 
 exports.insertMsg = function(msg){
+  console.log(msg.parent);
   var today = new Date().addHours(-6),
    chatDate = msg.parent || (today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()),
    newId = msg.id || chatId,
    newChat = ''+chatId;
   newId = ''+newId;
+
+  console.log(newId);
+  console.log(newChat);
   
   var chat = {
     PartitionKey: {'_':chatDate},
@@ -330,13 +334,13 @@ exports.insertMsg = function(msg){
     if(!error3){
       var chat2 = {
         PartitionKey: {'_':chatDate},
-        RowKey: {'_': newChat},
+        RowKey: {'_': newId},
         msg: {'_':msg.msg},
         dueDate: {'_':today, '$':'Edm.DateTime'}
       };
 
       var query = new azure.TableQuery()
-        .where('PartitionKey eq ?', [chatDate] ).and('RowKey eq ?', newChat);
+        .where('PartitionKey eq ?', [chatDate] ).and('RowKey eq ?', newId);
 
       tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
         if(!error) {
