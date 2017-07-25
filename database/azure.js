@@ -287,6 +287,7 @@ exports.insertLocation = function(msg, io){
     city:{'_':msg.city},
     status:{'_':1},
     first:{'_':true},
+    count:{'_':1},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
