@@ -346,7 +346,8 @@ exports.insertMsg = function(msg){
         if(!error) {
           if(result.entries.length != 0){
             var nowCount = 1;
-            if(result.entries[0].count) nowCount = result.entries[0].count._;
+            console.log(result.entries[0].count);
+            if(result.entries[0].count) {nowCount = result.entries[0].count._;console.log(result.entries[0].count._);}
             nowCount++;
             chat['count'] = {'_':nowCount};
             tableSvc.mergeEntity('chatsTable',chat2, function(error2, result2, response2){
