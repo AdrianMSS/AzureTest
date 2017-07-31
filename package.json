@@ -10,7 +10,8 @@
     "cookie-parser": "*",
     "cors": "*",
     "body-parser": "*",
-    "azure-storage": "*"
+    "azure-storage": "*",
+    "firebase-admin": "*"
   },
   "author": "Adrian MSS",
   "license": "ISC"

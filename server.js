@@ -18,6 +18,17 @@ var authToken = '6b96e1de386bde17238e384aee02257c';
 //require the Twilio module and create a REST client 
 var client = require('twilio')(accountSid, authToken); 
 
+var admin = require("firebase-admin");
+
+var serviceAccount = "firebase-adminsdk-kxmd2@soschat-6d3df.iam.gserviceaccount.com";
+console.log('FIREBASE');
+console.log(admin.credential.cert(serviceAccount));
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://soschat-6d3df.firebaseio.com"
+});
+
 var app = express();
 app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
 app.use(bodyParser.urlencoded({
