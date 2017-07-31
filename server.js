@@ -27,6 +27,29 @@ admin.initializeApp({
   databaseURL: "https://soschat-6d3df.firebaseio.com"
 });
 
+// The topic name can be optionally prefixed with "/topics/".
+var topic = "alert";
+
+// See the "Defining the message payload" section below for details
+// on how to define a message payload.
+var payload = {
+  notification: {
+    title: "SOS App",
+    body: "CNE alert"
+  }
+};
+
+// Send a message to devices subscribed to the provided topic.
+admin.messaging().sendToTopic(topic, payload)
+  .then(function(response) {
+    // See the MessagingTopicResponse reference documentation for the
+    // contents of response.
+    console.log("Successfully sent message:", response);
+  })
+  .catch(function(error) {
+    console.log("Error sending message:", error);
+  });
+
 var app = express();
 app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
 app.use(bodyParser.urlencoded({
