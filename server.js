@@ -20,9 +20,7 @@ var client = require('twilio')(accountSid, authToken);
 
 var admin = require("firebase-admin");
 
-var serviceAccount = "firebase-adminsdk-kxmd2@soschat-6d3df.iam.gserviceaccount.com";
-console.log('FIREBASE');
-console.log(admin.credential.cert(serviceAccount));
+var serviceAccount = require("serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
