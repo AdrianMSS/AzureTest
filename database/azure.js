@@ -171,11 +171,10 @@ exports.insertChat = function(req, res) {
 
 exports.insertImg = function(msg){
   var today = new Date().addHours(-6),
-   chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
+   chatDate = msg.parent || (today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()),
    newId = msg.id || chatId,
    newChat = ''+chatId;
   newId = ''+newId;
-  var city = "Santa Ana";
 
   var chat = {
     PartitionKey: {'_':chatDate},
@@ -188,32 +187,47 @@ exports.insertImg = function(msg){
     long:{'_':msg.long},
     position:{'_':msg.position},
     status:{'_':1},
-    city:{'_':city},
+    city:{'_':msg.city},
+    img:{'_':true},
+    path:{'_':msg.path},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
   
-  var Chat2 = {
-	PartitionKey:chatDate,
-	RowKey: newChat,
-    	user:msg.user,
-    	msg:msg.path,
-    	id: newId,
-    	type:'img',
-    	lat:msg.lat,
-    	long:msg.long,
-    	position:msg.position,
-    	status:1,
-    	city:city
-  }
-  todayChats.push(Chat2);
 
   chatId++;
-  tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
-    if(!error){
-      console.log(result);
+  tableSvc.insertEntity('chatsTable',chat, function (error3, result3, response3) {
+    if(!error3){
+      var chat2 = {
+        PartitionKey: {'_':chatDate},
+        RowKey: {'_': newId},
+        dueDate: {'_':today, '$':'Edm.DateTime'}
+        img:{'_':true},
+        path:{'_':msg.path},
+      };
+
+      var query = new azure.TableQuery()
+        .where('PartitionKey eq ?', [chatDate] ).and('RowKey eq ?', newId);
+
+      tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
+        if(!error) {
+          if(result.entries.length != 0){
+            var nowCount = 1;
+            if(result.entries[0].count) nowCount = result.entries[0].count._;
+            nowCount++;
+            chat2['count'] = {'_':nowCount};
+            tableSvc.mergeEntity('chatsTable',chat2, function(error2, result2, response2){
+              if(!error2) {
+              }
+              else{
+                console.log(error2);
+              }
+            });
+          }
+        }
+      });
     }
     else{
-      console.log(error);
+      console.log(error3);
     }
   });
 }
@@ -289,6 +303,7 @@ exports.insertLocation = function(msg, io){
     status:{'_':1},
     first:{'_':true},
     count:{'_':1},
+    img:{'_':false},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -311,9 +326,6 @@ exports.insertMsg = function(msg){
    newChat = ''+chatId;
   newId = ''+newId;
 
-  console.log(newId);
-  console.log(newChat);
-  
   var chat = {
     PartitionKey: {'_':chatDate},
     RowKey: {'_': newChat},
