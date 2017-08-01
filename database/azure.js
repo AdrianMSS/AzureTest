@@ -200,7 +200,7 @@ exports.insertImg = function(msg){
       var chat2 = {
         PartitionKey: {'_':chatDate},
         RowKey: {'_': newId},
-        dueDate: {'_':today, '$':'Edm.DateTime'}
+        dueDate: {'_':today, '$':'Edm.DateTime'},
         img:{'_':true},
         path:{'_':msg.path},
       };
