@@ -133,6 +133,11 @@ app.get('/music', function(req,res){
 	});
 });
 
+app.post('/idchats', function (req,res) {
+	console.log(req.body);
+	res,send(200,"AK7");
+})
+
 app.get('*', function (req, res) {
     res.redirect(404, '../#home');
 });
