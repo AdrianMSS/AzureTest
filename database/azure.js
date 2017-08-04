@@ -188,6 +188,7 @@ exports.insertImg = function(msg){
     position:{'_':msg.position},
     status:{'_':1},
     city:{'_':msg.city},
+    first:{'_':false},
     img:{'_':true},
     path:{'_':msg.path},
     dueDate: {'_':today, '$':'Edm.DateTime'}
@@ -251,6 +252,7 @@ exports.insertRec = function(msg){
     position:{'_':msg.position},
     status:{'_':1},
     city:{'_':msg.city},
+    first:{'_':false},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -337,6 +339,7 @@ exports.insertMsg = function(msg){
     long:{'_':msg.long},
     position:{'_':msg.position},
     status:{'_':1},
+    first:{'_':false},
     city:{'_':msg.city},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
@@ -381,6 +384,32 @@ exports.insertMsg = function(msg){
 exports.userChats = function(req,res){
   var query = new azure.TableQuery()
     .where('user eq ?', parseInt(req.body.user)).and('first eq ?', true);
+
+  tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
+
+    if(!error) {
+      var amount = response.body.value.length;
+        var msg = {};
+        var reverseChats = response.body.value.reverse();
+        reverseChats.forEach(function(element, index){
+          var newChat = "Alerta";
+          var hasImg = false;
+          if(!element.first)newChat=element.msg.substr(0,15);
+          if(element.img) hasImg=true;
+          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count}
+        });
+        console.log(msg);
+        res.send(200,{"chats":msg});
+    }
+        else{
+      res.send(400, error);
+    }
+  });
+};
+
+exports.getMsg = function(req,res){
+  var query = new azure.TableQuery()
+    .where('id eq ?', parseInt(req.body.id)).and('first eq ?', true);
 
   tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
 
