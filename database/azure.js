@@ -408,6 +408,7 @@ exports.userChats = function(req,res){
 };
 
 exports.getMsg = function(req,res){
+  console.log(req.body);
   var query = new azure.TableQuery()
     .where('id eq ?', parseInt(req.body.id)).and('first eq ?', true);
 
