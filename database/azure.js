@@ -410,7 +410,7 @@ exports.userChats = function(req,res){
 exports.getMsg = function(req,res){
   console.log(req.body);
   var query = new azure.TableQuery()
-    .where('id eq ?', req.body.id).and('first eq ?', true);
+    .where('id eq ?', req.body.id);
 
   tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
 
