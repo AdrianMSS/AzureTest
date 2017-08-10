@@ -320,6 +320,45 @@ exports.insertLocation = function(msg, io){
   });
 }
 
+exports.newEmergency = function(req, res){
+  var msg = req.body;
+  var today = new Date().addHours(-6),
+   chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
+   newId = msg.id || chatId;
+  msg.id = parseInt(newId);
+  msg['parent'] = chatDate;
+  newId = ''+newId;
+  res.send(200, msg);
+  
+  var chat = {
+    PartitionKey: {'_':chatDate},
+    RowKey: {'_': newId},
+    id: {'_':newId},
+    user: {'_':msg.user},
+    msg: {'_':"Alerta Inicial"},
+    type:{'_':msg.type},
+    lat:{'_':msg.lat},
+    long:{'_':msg.long},
+    position:{'_':msg.position},
+    city:{'_':msg.city},
+    status:{'_':1},
+    first:{'_':true},
+    count:{'_':1},
+    img:{'_':false},
+    dueDate: {'_':today, '$':'Edm.DateTime'}
+  };
+
+  chatId++;
+  tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
+    if(!error){
+      console.log(result);
+    }
+    else{
+      console.log(error);
+    }
+  });
+}
+
 exports.insertMsg = function(msg){
   console.log(msg.parent);
   var today = new Date().addHours(-6),

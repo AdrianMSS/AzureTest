@@ -52,7 +52,9 @@ app.put('/entity', azureServices.mergeEntity);
 app.get('/now', azureServices.getNow);
 
 app.get('/barrios', azureServices.getBarrios);
-app.post('/signing',azureServices.signUser );
+app.post('/signing',azureServices.signUser);
+
+app.post('/emergency',azureServices.newEmergency);
 
 app.post('/alarm', function(req, res){
   console.log(req.body);
