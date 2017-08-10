@@ -54,7 +54,32 @@ app.get('/now', azureServices.getNow);
 app.get('/barrios', azureServices.getBarrios);
 app.post('/signing',azureServices.signUser);
 
-app.post('/emergency',azureServices.newEmergency);
+app.post('/emergency',function (req,res) {
+	var topic = req.body.city;
+	var body = "Alerta de tipo "+req.body.type;
+
+	// See the "Defining the message payload" section below for details
+	// on how to define a message payload.
+	var payload = {
+	  notification: {
+	    title: "SOS App",
+	    body: body
+	  }
+	};
+
+	// Send a message to devices subscribed to the provided topic.
+	admin.messaging().sendToTopic(topic, payload)
+	  .then(function(response) {
+	    // See the MessagingTopicResponse reference documentation for the
+	    // contents of response.
+	    console.log("Successfully sent message:", response);
+	})
+	.catch(function(error) {
+	    console.log("Error sending message:", error);
+	});
+
+	azureServices.newEmergency(req,res);
+});
 
 app.post('/alarm', function(req, res){
   console.log(req.body);
@@ -249,14 +274,14 @@ io.on('connection', function (socket) {
 		azureServices.insertLocation(message, io);
 	})
 	
-        socket.on('msg', function(msg){
-                msg = JSON.parse(msg);
-                lastAlert=msg.type;
-                
-                io.emit('message', msg);
-                io.emit('full', msg);
-                azureServices.insertMsg(msg);
-        })
+    socket.on('msg', function(msg){
+            msg = JSON.parse(msg);
+            lastAlert=msg.type;
+            
+            io.emit('message', msg);
+            io.emit('full', msg);
+            azureServices.insertMsg(msg);
+    })
 
 	socket.on('cne', function(msg){
 		console.log(msg);
