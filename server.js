@@ -57,6 +57,7 @@ app.post('/signing',azureServices.signUser);
 app.post('/emergency',function (req,res) {
 	var topic = req.body.city;
 	var body = "Alerta de tipo "+req.body.type;
+	basicCall(req.body.type);
 
 	// See the "Defining the message payload" section below for details
 	// on how to define a message payload.
