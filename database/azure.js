@@ -456,8 +456,8 @@ exports.parentChats = function(req,res){
     if(!error) {
       var amount = response.body.value.length;
         var msg = {};
-        var reverseChats = response.body.value.reverse();
-        reverseChats.forEach(function(element, index){
+        //var reverseChats = response.body.value.reverse();
+        response.body.value.forEach(function(element, index){
           var newChat = "Alerta";
           var hasImg = false;
           //if(!element.first)newChat=element.msg.substr(0,15);
