@@ -447,12 +447,12 @@ exports.userChats = function(req,res){
 };
 
 exports.parentChats = function(req,res){
-  console.log(req.body);
+  console.log(parseInt(req.body.id));
   var query = new azure.TableQuery()
     .where('id eq ?', parseInt(req.body.id));
 
   tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
-
+    console.log(response.body);
     if(!error) {
       var amount = response.body.value.length;
         var msg = {};
