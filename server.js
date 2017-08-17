@@ -47,6 +47,11 @@ app.get('/chats', azureServices.getChats);
 app.get('/today', azureServices.getToday);
 app.post('/userchats', azureServices.userChats);
 
+app.post('/parentchats', function (req,res) {
+	// body...
+	console.log(req.body);
+});
+
 app.put('/entity', azureServices.mergeEntity);
 
 app.get('/now', azureServices.getNow);
@@ -57,7 +62,7 @@ app.post('/signing',azureServices.signUser);
 app.post('/emergency',function (req,res) {
 	var topic = req.body.city;
 	var body = "Alerta de tipo "+req.body.type;
-	basicCall(req.body.type);
+	//basicCall(req.body.type);
 
 	// See the "Defining the message payload" section below for details
 	// on how to define a message payload.
@@ -247,7 +252,7 @@ io.on('connection', function (socket) {
 		msg = JSON.parse(msg);
 		console.log(msg);
 		lastAlert=msg.type;
-		basicCall(lastAlert);
+		//basicCall(lastAlert);
 		// The topic name can be optionally prefixed with "/topics/".
 		var topic = msg.city;
 		var body = "Alerta de tipo "+msg.type;
