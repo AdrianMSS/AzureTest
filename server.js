@@ -46,11 +46,8 @@ app.post('/new', azureServices.insertChat);
 app.get('/chats', azureServices.getChats);
 app.get('/today', azureServices.getToday);
 app.post('/userchats', azureServices.userChats);
+app.post('/parentchats', azureServices.parentChats);
 
-app.post('/parentchats', function (req,res) {
-	// body...
-	console.log(req.body);
-});
 
 app.put('/entity', azureServices.mergeEntity);
 

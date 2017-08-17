@@ -446,6 +446,32 @@ exports.userChats = function(req,res){
   });
 };
 
+exports.parentChats = function(req,res){
+  var query = new azure.TableQuery()
+    .where('id eq ?', parseInt(req.body.id));
+
+  tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
+
+    if(!error) {
+      var amount = response.body.value.length;
+        var msg = {};
+        var reverseChats = response.body.value.reverse();
+        reverseChats.forEach(function(element, index){
+          var newChat = "Alerta";
+          var hasImg = false;
+          //if(!element.first)newChat=element.msg.substr(0,15);
+          if(element.img) hasImg=true;
+          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count}
+        });
+        console.log(msg);
+        res.send(200,{"chats":msg});
+    }
+        else{
+      res.send(400, error);
+    }
+  });
+};
+
 exports.getMsg = function(req,res){
   console.log(req.body);
   var query = new azure.TableQuery()
