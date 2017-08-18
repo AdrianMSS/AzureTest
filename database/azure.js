@@ -471,10 +471,6 @@ exports.parentChats = function(req,res){
           if(element.long > 0) long = element.long;
           if(element.lat > 0) lat = element.lat;
         });
-        console.log(msg);
-          var newDate = element.Timestamp.split('T')[0].split('-');
-          var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
-        console.log(long);
         res.send(200,{"chats":msg, "long":long, "lat":lat});
     }
         else{
