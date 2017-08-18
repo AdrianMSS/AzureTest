@@ -424,7 +424,11 @@ exports.userChats = function(req,res){
           var hasImg = false;
           if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
-          var newDate = element.Timestamp.split('T')[0].split('-');
+          if(element.today){}
+          else{
+            element.today = element.Timestamp;
+          }
+          var newDate = element.today.split('T')[0].split('-');
           var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
           msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count, date:filterDate};
         });
@@ -452,7 +456,11 @@ exports.parentChats = function(req,res){
         response.body.value.forEach(function(element, index){
           var newChat = "Alerta";
           var hasImg = false;
-          var newDate = element.Timestamp.split('T')[0].split('-');
+          if(element.today){}
+          else{
+            element.today = element.Timestamp;
+          }
+          var newDate = element.today.split('T')[0].split('-');
           var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
           //if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
