@@ -154,6 +154,7 @@ exports.insertChat = function(req, res) {
     lat:{'_':req.body.lat},
     long:{'_':req.body.long},
     position:{'_':req.body.position},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
   chatId++;
@@ -191,6 +192,7 @@ exports.insertImg = function(msg){
     first:{'_':false},
     img:{'_':true},
     path:{'_':msg.path},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
   
@@ -201,7 +203,6 @@ exports.insertImg = function(msg){
       var chat2 = {
         PartitionKey: {'_':chatDate},
         RowKey: {'_': newId},
-        dueDate: {'_':today, '$':'Edm.DateTime'},
         img:{'_':true},
         path:{'_':msg.path},
       };
@@ -253,23 +254,9 @@ exports.insertRec = function(msg){
     status:{'_':1},
     city:{'_':msg.city},
     first:{'_':false},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
-
-  var Chat2 = {
-        PartitionKey:chatDate,
-        RowKey: newChat,
-        user:msg.user,
-        msg:msg.path,
-        id: newId,
-        type:'rec',
-        lat:msg.lat,
-        long:msg.long,
-        position:msg.position,
-        status:1,
-        city:city
-  }
-  todayChats.push(Chat2);
 
   chatId++;
   tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
@@ -306,6 +293,7 @@ exports.insertLocation = function(msg, io){
     first:{'_':true},
     count:{'_':1},
     img:{'_':false},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -345,6 +333,7 @@ exports.newEmergency = function(req, res){
     first:{'_':true},
     count:{'_':1},
     img:{'_':false},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -380,6 +369,7 @@ exports.insertMsg = function(msg){
     status:{'_':1},
     first:{'_':false},
     city:{'_':msg.city},
+    today: {'_':today},
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
@@ -389,8 +379,7 @@ exports.insertMsg = function(msg){
       var chat2 = {
         PartitionKey: {'_':chatDate},
         RowKey: {'_': newId},
-        msg: {'_':msg.msg},
-        dueDate: {'_':today, '$':'Edm.DateTime'}
+        msg: {'_':msg.msg}
       };
 
       var query = new azure.TableQuery()
