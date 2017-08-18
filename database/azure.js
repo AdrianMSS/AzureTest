@@ -436,8 +436,8 @@ exports.userChats = function(req,res){
           if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
           var newDate = element.Timestamp.split('T')[0].split('-');
-          console.log(newDate);
-          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count}
+          var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
+          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count, date:filterDate};
         });
         res.send(200,{"chats":msg});
     }
@@ -463,13 +463,17 @@ exports.parentChats = function(req,res){
         response.body.value.forEach(function(element, index){
           var newChat = "Alerta";
           var hasImg = false;
+          var newDate = element.Timestamp.split('T')[0].split('-');
+          var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
           //if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
-          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count};
+          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count, date:filterDate};
           if(element.long > 0) long = element.long;
           if(element.lat > 0) lat = element.lat;
         });
         console.log(msg);
+          var newDate = element.Timestamp.split('T')[0].split('-');
+          var filterDate = newDate[2]+'-'+newDate[1]+'-'+newDate[0];
         console.log(long);
         res.send(200,{"chats":msg, "long":long, "lat":lat});
     }
