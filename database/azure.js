@@ -455,17 +455,21 @@ exports.parentChats = function(req,res){
     console.log(response.body);
     if(!error) {
       var amount = response.body.value.length;
-        var msg = {};
+        var msg = {},
+        long = -84.179653,
+        lat = 9.927748;
         //var reverseChats = response.body.value.reverse();
         response.body.value.forEach(function(element, index){
           var newChat = "Alerta";
           var hasImg = false;
           //if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
-          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count}
+          msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count};
+          if(element.long != 0) long = element.long;
+          if(element.lat != 0) lat = element.lat;
         });
         console.log(msg);
-        res.send(200,{"chats":msg});
+        res.send(200,{"chats":msg, "long":long, "lat":lat});
     }
         else{
       res.send(400, error);
