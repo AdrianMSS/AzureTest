@@ -236,7 +236,7 @@ exports.insertImg = function(msg){
 
 exports.insertRec = function(msg){
   var today = new Date().addHours(-6),
-   chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
+   chatDate = msg.parent || (today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()),
    newId = msg.id || chatId,
    newChat = ''+chatId;
   newId = ''+newId;
@@ -258,13 +258,37 @@ exports.insertRec = function(msg){
     dueDate: {'_':today, '$':'Edm.DateTime'}
   };
 
-  chatId++;
-  tableSvc.insertEntity('chatsTable',chat, function (error, result, response) {
-    if(!error){
-      console.log(result);
+   chatId++;
+  tableSvc.insertEntity('chatsTable',chat, function (error3, result3, response3) {
+    if(!error3){
+      var chat2 = {
+        PartitionKey: {'_':chatDate},
+        RowKey: {'_': newId}
+      };
+
+      var query = new azure.TableQuery()
+        .where('PartitionKey eq ?', [chatDate] ).and('RowKey eq ?', newId);
+
+      tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
+        if(!error) {
+          if(result.entries.length != 0){
+            var nowCount = 1;
+            if(result.entries[0].count) nowCount = result.entries[0].count._;
+            nowCount++;
+            chat2['count'] = {'_':nowCount};
+            tableSvc.mergeEntity('chatsTable',chat2, function(error2, result2, response2){
+              if(!error2) {
+              }
+              else{
+                console.log(error2);
+              }
+            });
+          }
+        }
+      });
     }
     else{
-      console.log(error);
+      console.log(error3);
     }
   });
 }
