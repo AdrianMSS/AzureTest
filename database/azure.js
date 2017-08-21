@@ -489,9 +489,8 @@ exports.parentChats = function(req,res){
           //if(!element.first)newChat=element.msg.substr(0,15);
           if(element.img) hasImg=true;
           msg[index] = {PartitionKey:element.PartitionKey, RowKey:element.RowKey, type:element.type, msg:newChat, status:element.status, city:element.city, lat:element.lat,long:element.long,path:element.path, img:hasImg, msg:element.msg, count:element.count, date:filterDate};
-          console.log(! isNaN(element.long));
           if(! isNaN(element.long)) long = element.long;
-          if(parseFloat(element.lat) > 0) lat = element.lat;
+          if(! isNaN(element.lat)) lat = element.lat;
         });
         //console.log(long);
         res.send(200,{"chats":msg, "long":long, "lat":lat});
