@@ -46,6 +46,7 @@ app.post('/new', azureServices.insertChat);
 app.get('/chats', azureServices.getChats);
 app.get('/today', azureServices.getToday);
 app.post('/userchats', azureServices.userChats);
+app.post('/citychats', azureServices.cityChats);
 app.post('/parentchats', azureServices.parentChats);
 
 
