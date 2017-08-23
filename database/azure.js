@@ -466,7 +466,7 @@ exports.userChats = function(req,res){
 
 exports.cityChats = function(req,res){
   var query = new azure.TableQuery()
-    .where('city eq ?', parseInt(req.body.city)).and('first eq ?', true);
+    .where('city eq ?', req.body.city).and('first eq ?', true);
 
   tableSvc.queryEntities('chatsTable',query, null, function(error, result, response){
 
