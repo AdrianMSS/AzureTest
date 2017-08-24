@@ -300,7 +300,7 @@ io.on('connection', function (socket) {
             azureServices.insertMsg(msg);
         }
         catch(e){
-        	
+        	console.log(e);
         }
     })
 
