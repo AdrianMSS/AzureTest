@@ -300,13 +300,14 @@ exports.insertLocation = function(msg, io){
   msg.id = parseInt(newId);
   msg['parent'] = chatDate;
   newId = ''+newId;
+  var userId = parseInt(msg.user);
   io.emit('alert', msg);
   
   var chat = {
     PartitionKey: {'_':chatDate},
     RowKey: {'_': newId},
     id: {'_':newId},
-    user: {'_':msg.user},
+    user: {'_':userId},
     msg: {'_':"Alerta Inicial"},
     type:{'_':msg.type},
     lat:{'_':msg.lat},
@@ -340,13 +341,14 @@ exports.newEmergency = function(req, res){
   msg.id = parseInt(newId);
   msg['parent'] = chatDate;
   newId = ''+newId;
+  var userId = parseInt(msg.user);
   res.send(200, msg);
   
   var chat = {
     PartitionKey: {'_':chatDate},
     RowKey: {'_': newId},
     id: {'_':newId},
-    user: {'_':msg.user},
+    user: {'_':userId},
     msg: {'_':"Alerta Inicial"},
     type:{'_':msg.type},
     lat:{'_':msg.lat},
