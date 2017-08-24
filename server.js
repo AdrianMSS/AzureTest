@@ -9,7 +9,8 @@ const express = require('express'),
     configParams = require('./config.json'),
     accountSid = configParams.twilioAccount,
     authToken = configParams.twilioToken,
-    fs = require("fs");
+    fs = require("fs"),
+    multer = require('multer');
 
 let firstDate = new Date(),
     buttonMsg = 0,
@@ -102,6 +103,19 @@ app.post('/alarm', function(req, res){
   }
 });
 
+app.post('/alarm', function(req, res){
+  console.log(req.body);
+  if(req.body.Boton == 1){
+    alarms[req.body.Id] = parseInt(req.body.Sirena);
+  }
+  if(alarms[req.body.Id] != undefined){
+    res.send(200, {status:alarms[req.body.Id]});
+  }
+  else{
+    res.send(400, {error:"Alarm not available"});
+  }
+});
+
 
 app.post('/button', function(req, res){
 	console.log(req.body);
@@ -140,12 +154,31 @@ app.post('/login', dbServices.loginUser);
 
 app.post('/audio', function(req, res){
 	console.log(req.body);
-});
-
-app.post('/location', function(req, res){
-        console.log(req.body);
-	res.send(200, {"usr":14});
 });*/
+
+
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './admin/uploads');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname);
+  }
+});
+var upload = multer({ storage : storage}).single('userPhoto');
+
+app.post('/image', function(req, res){
+    console.log(req.body);
+    upload(req,res,function(err) {
+        if(err) {
+            return res.end("Error uploading file.");
+        }
+        var filePath = 'img/uploads/'+req.file.originalname;
+        console.log(filePath);
+        //dbPersonal.newImg(filePath);
+        res.send(200,{file:filePath});
+    });
+});
 
 
 
@@ -228,9 +261,9 @@ io.on('connection', function (socket) {
 	})
 
 	
-        socket.on('all', function(msg){
-                azureServices.getAll(io);
-        })
+    socket.on('all', function(msg){
+            azureServices.getAll(io);
+    })
 
 
 	socket.on('location', function(msg){

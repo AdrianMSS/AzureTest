@@ -11,7 +11,8 @@
     "cors": "*",
     "body-parser": "*",
     "azure-storage": "*",
-    "firebase-admin": "*"
+    "firebase-admin": "*",
+    "multer": "*"
   },
   "author": "Adrian MSS",
   "license": "ISC"
