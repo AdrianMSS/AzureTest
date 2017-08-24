@@ -30,7 +30,7 @@ var queryId = new azure.TableQuery()
 tableSvc.queryEntities('chatsTable',queryId, null, function(error, result, response) {
   if(!error) {
     result.entries.forEach(function(element, index){
-      console.log(element);
+      //console.log(element);
       var newId = (parseInt(element.RowKey._)+1 || 0);
       chatId = Math.max(chatId, newId);    
     });

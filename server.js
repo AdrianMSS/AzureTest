@@ -11,7 +11,6 @@ const express = require('express'),
     authToken = configParams.twilioToken,
     fs = require("fs");
 
-//
 let firstDate = new Date(),
     buttonMsg = 0,
     lastAlert = 'delito',
@@ -289,6 +288,7 @@ io.on('connection', function (socket) {
 
 	socket.on('img', function(msg){
 		msg = JSON.parse(msg);
+		console.log(msg);
 		let base64Data = msg.img.replace(/^data:image\/jpg;base64,/, ""),
 			now = new Date() - firstDate,
 			pathSave = configParams.appPath+now+'.jpg';
