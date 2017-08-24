@@ -178,7 +178,7 @@ let server = app.listen(3000, function(){
 	console.log('Server Started');
 })
 
-let io = io.listen(server);
+io = io.listen(server);
 
 let basicCall = function(type){
     var msg = "Alerta recibida de tipo " + type;
