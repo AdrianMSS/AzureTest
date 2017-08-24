@@ -3,7 +3,6 @@
 const express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    io = require('socket.io'),
     dbServices = require('./database/basic'),
     azureServices = require('./database/azure');
 
@@ -20,6 +19,7 @@ let firstDate = new Date(),
  
 //require the Twilio module and create a REST client 
 let client = require('twilio')(accountSid, authToken); 
+let io = require('socket.io');
 
 const admin = require("firebase-admin");
 
