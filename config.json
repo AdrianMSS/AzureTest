@@ -4,5 +4,6 @@
 	"twilioSender":"+13218042313",
 	"twilioReciever":"+50683459091",
 	"firebaseUrl":"https://soschat-6d3df.firebaseio.com",
-	"savingPath":"http://104.41.158.6:3000/img/uploads/"
+	"savingPath":"http://104.41.158.6:3000/img/uploads/",
+	"appPath":"webapp/webapp/img/uploads/"
 }

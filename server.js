@@ -1,17 +1,17 @@
 //Test Server
 
+//Dependencies
 const express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     dbServices = require('./database/basic'),
-    azureServices = require('./database/azure');
+    azureServices = require('./database/azure'), 
+    configParams = require('./config.json'),
+    accountSid = configParams.twilioAccount,
+    authToken = configParams.twilioToken,
+    fs = require("fs");
 
-
-const configParams = require('./config.json');
-const accountSid = configParams.twilioAccount; 
-const authToken = configParams.twilioToken; 
-
-
+//
 let firstDate = new Date(),
     buttonMsg = 0,
     lastAlert = 'delito',
@@ -60,30 +60,32 @@ app.get('/now', azureServices.getNow);
 app.get('/barrios', azureServices.getBarrios);
 app.post('/signing',azureServices.signUser);
 
+
+let firebaseTopic = function(topic, payload){
+    admin.messaging().sendToTopic(topic, payload)
+	  .then(function(response) {
+	    console.log("Successfully sent message:", response);
+	})
+	.catch(function(error) {
+	    console.log("Error sending message:", error);
+	});
+}
+
 app.post('/emergency',function (req,res) {
-	var topic = req.body.city;
-	var body = "Alerta de tipo "+req.body.type;
+	let topic = req.body.city;
+	let body = "Alerta de tipo "+req.body.type;
 	basicCall(req.body.type);
 
 	// See the "Defining the message payload" section below for details
 	// on how to define a message payload.
-	var payload = {
+	let payload = {
 	  notification: {
 	    title: "SOS App",
 	    body: body
 	  }
 	};
 
-	// Send a message to devices subscribed to the provided topic.
-	admin.messaging().sendToTopic(topic, payload)
-	  .then(function(response) {
-	    // See the MessagingTopicResponse reference documentation for the
-	    // contents of response.
-	    console.log("Successfully sent message:", response);
-	})
-	.catch(function(error) {
-	    console.log("Error sending message:", error);
-	});
+	firebaseTopic(topic, payload);
 
 	azureServices.newEmergency(req,res);
 });
@@ -104,7 +106,7 @@ app.post('/alarm', function(req, res){
 
 app.post('/button', function(req, res){
 	console.log(req.body);
-	var mensaje='',
+	let mensaje='',
 	  lat = 0,
 	  long = 0;
 	buttonMsg++;
@@ -119,7 +121,7 @@ app.post('/button', function(req, res){
 	     lat=9.927796;
 	     long= -84.179488
 	}
-        var message = {full:mensaje,path:'', msg:mensaje, user:'Boton', chat:true,type:'delito', lat:lat, long:long};
+        let message = {full:mensaje,path:'', msg:mensaje, user:'Boton', chat:true,type:'delito', lat:lat, long:long};
 	dbServices.insertMsg(message);
 	io.emit('alert', message);
 	res.send(200,message);
@@ -149,14 +151,13 @@ app.post('/location', function(req, res){
 
 
 app.get('/music', function(req,res){	
-	var path = req.query.id;
-	var file = 'webapp/webapp/img/uploads/'+path;
-	var fs = require("fs");
+	const path = req.query.id;
+	const file = configParams.appPath+path;
 	console.log(file);
 	fs.exists(file,function(exists){
 		if(exists)
 		{
-			var rstream = fs.createReadStream(file);
+			let rstream = fs.createReadStream(file);
 			rstream.pipe(res);
 		}
 		else
@@ -181,7 +182,7 @@ let server = app.listen(3000, function(){
 io = io.listen(server);
 
 let basicCall = function(type){
-    var msg = "Alerta recibida de tipo " + type;
+    let msg = "Alerta recibida de tipo " + type;
     client.messages.create({
       to: configParams.twilioReciever,
       from:configParams.twilioSender,
@@ -196,7 +197,7 @@ let basicCall = function(type){
 }
 
 let cneCall = function(id,msg){
-    var toNumber = "+50688381241";
+    let toNumber = "+50688381241";
     if(id==1)toNumber = "+50688381241";
     else if(id==2)toNumber = "+50683465862";
     else if(id==3)toNumber = "+50683206919";
@@ -237,29 +238,22 @@ io.on('connection', function (socket) {
 		msg = JSON.parse(msg);
 		lastAlert=msg.type;
 		basicCall(lastAlert);
-		var topic = msg.city;
-		var body = "Alerta de tipo "+msg.type;
+		let topic = msg.city;
+		let body = "Alerta de tipo "+msg.type;
 
 		// See the "Defining the message payload" section below for details
 		// on how to define a message payload.
-		var payload = {
+		let payload = {
 		  notification: {
 		    title: "SOS App",
 		    body: body
 		  }
 		};
 
-		// Send a message to devices subscribed to the provided topic.
-		admin.messaging().sendToTopic(topic, payload)
-		  .then(function(response) {
-		    // See the MessagingTopicResponse reference documentation for the
-		    // contents of response.
-		    console.log("Successfully sent message:", response);
-		  })
-		  .catch(function(error) {
-		    console.log("Error sending message:", error);
-		  });
-		var message = {msg:msg, lat:msg.lat, long:msg.long, type:msg.type, position:msg.position, user:msg.user, city:msg.city};
+		
+		firebaseTopic(topic, payload);
+
+		let message = {msg:msg, lat:msg.lat, long:msg.long, type:msg.type, position:msg.position, user:msg.user, city:msg.city};
 		azureServices.insertLocation(message, io);
 	})
 	
@@ -295,16 +289,16 @@ io.on('connection', function (socket) {
 
 	socket.on('img', function(msg){
 		msg = JSON.parse(msg);
-		var base64Data = msg.img.replace(/^data:image\/jpg;base64,/, ""),
+		let base64Data = msg.img.replace(/^data:image\/jpg;base64,/, ""),
 			now = new Date() - firstDate,
-			pathSave = 'webapp/webapp/img/uploads/'+now+'.jpg';
+			pathSave = configParams.appPath+now+'.jpg';
 		console.log(pathSave);
 
 		require("fs").writeFile(pathSave, base64Data, 'base64', function(err) {
 		  console.log(err);
 		});
-		var pathImg = configParams.savingPath+now+'.jpg';
-		var message = {msg:pathImg, path:pathSave, img:true,type:lastAlert};
+		let pathImg = configParams.savingPath+now+'.jpg';
+		let message = {msg:pathImg, path:pathSave, img:true,type:lastAlert};
 		
 		msg['path'] = pathImg;
 
@@ -318,7 +312,7 @@ io.on('connection', function (socket) {
 	  msg = JSON.parse(msg);
       let base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
               now = new Date() - firstDate,
-              pathSave = 'webapp/webapp/img/uploads/'+now+'.3gpp';
+              pathSave = configParams.appPath+now+'.3gpp';
 
       require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
         console.log(error);
