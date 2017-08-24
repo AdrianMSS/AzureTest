@@ -290,6 +290,7 @@ io.on('connection', function (socket) {
 	})
 	
     socket.on('msg', function(msg){
+    		console.log(msg);
             msg = JSON.parse(msg);
             lastAlert=msg.type;
             
