@@ -322,7 +322,7 @@ io.on('connection', function (socket) {
     		    console.log(message.sid);
 		  }
 		});
-        })
+    })
 
 
 	socket.on('img', function(msg){
@@ -348,22 +348,29 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('rec', function(msg){
-	  msg = JSON.parse(msg);
-      let base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
-              now = new Date() - firstDate,
-              pathSave = configParams.appPath+now+'.3gpp';
+		console.log("new rec");
+    	try{
+    		console.log(msg);
+		  msg = JSON.parse(msg);
+	      let base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
+	              now = new Date() - firstDate,
+	              pathSave = configParams.appPath+now+'.3gpp';
 
-      require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
-        console.log(error);
-      });
+	      require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
+	        console.log(error);
+	      });
 
-      let pathImg = configParams.savingPath+now+'.3gpp';
-	  let message = {msg:pathImg, path:pathSave, img:true};	
-	  
-	  msg['path'] = pathImg;
-      azureServices.insertRec(msg);
-      io.emit('message', message);
-      io.emit('full', message); 
+	      let pathImg = configParams.savingPath+now+'.3gpp';
+		  let message = {msg:pathImg, path:pathSave, img:true};	
+		  
+		  msg['path'] = pathImg;
+	      azureServices.insertRec(msg);
+	      io.emit('message', message);
+	      io.emit('full', message); 
+	    }
+	    catch(e){
+	    	console.log(e);
+	    }
     });
 
 	socket.on('users', function(msg){
