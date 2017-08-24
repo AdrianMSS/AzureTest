@@ -290,6 +290,7 @@ io.on('connection', function (socket) {
 	})
 	
     socket.on('msg', function(msg){
+    	try{
     		console.log(msg);
             msg = JSON.parse(msg);
             lastAlert=msg.type;
@@ -297,6 +298,10 @@ io.on('connection', function (socket) {
             io.emit('message', msg);
             io.emit('full', msg);
             azureServices.insertMsg(msg);
+        }
+        catch(e){
+        	
+        }
     })
 
 	socket.on('cne', function(msg){
