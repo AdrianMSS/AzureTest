@@ -1,35 +1,38 @@
 //Test Server
 
-var express = require('express'),
+const express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     io = require('socket.io'),
-    firstDate = new Date(),
+    dbServices = require('./database/basic'),
+    azureServices = require('./database/azure');
+
+
+const configParams = require('./config.json');
+const accountSid = configParams.twilioAccount; 
+const authToken = configParams.twilioToken; 
+
+
+let firstDate = new Date(),
     buttonMsg = 0,
     lastAlert = 'delito',
     alarms = {1:0,2:0,3:0};
-
-var dbServices = require('./database/basic'),
-    azureServices = require('./database/azure');
-
-var accountSid = 'ACb26ac3b02f8f99b038133a4a75b29b56'; 
-var authToken = '6b96e1de386bde17238e384aee02257c'; 
  
 //require the Twilio module and create a REST client 
-var client = require('twilio')(accountSid, authToken); 
+let client = require('twilio')(accountSid, authToken); 
 
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 
-var serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://soschat-6d3df.firebaseio.com"
+  databaseURL: configParams.firebaseUrl
 });
 
 
 
-var app = express();
+let app = express();
 app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
 app.use(bodyParser.urlencoded({
   extended: true
@@ -60,7 +63,7 @@ app.post('/signing',azureServices.signUser);
 app.post('/emergency',function (req,res) {
 	var topic = req.body.city;
 	var body = "Alerta de tipo "+req.body.type;
-	//basicCall(req.body.type);
+	basicCall(req.body.type);
 
 	// See the "Defining the message payload" section below for details
 	// on how to define a message payload.
@@ -129,7 +132,8 @@ app.get('/button', function(req,res){
 
 app.post('/login', dbServices.loginUser);
 
-app.get('/audio', function(req, res){
+
+/*app.get('/audio', function(req, res){
 	console.log(req.body);
 });
 
@@ -140,7 +144,7 @@ app.post('/audio', function(req, res){
 app.post('/location', function(req, res){
         console.log(req.body);
 	res.send(200, {"usr":14});
-});
+});*/
 
 
 
@@ -170,17 +174,17 @@ app.get('*', function (req, res) {
     res.redirect(404, '../#home');
 });
 
-var server = app.listen(3000, function(){
+let server = app.listen(3000, function(){
 	console.log('Server Started');
 })
 
-var io = io.listen(server);
+let io = io.listen(server);
 
-var basicCall = function(type){
+let basicCall = function(type){
     var msg = "Alerta recibida de tipo " + type;
     client.messages.create({
-      to: "+50683459091",
-      from:"+13218042313",
+      to: configParams.twilioReciever,
+      from:configParams.twilioSender,
       body: msg,
     }, function(err, message) {
       if (err) {
@@ -190,7 +194,8 @@ var basicCall = function(type){
       }
     });
 }
-var cneCall = function(id,msg){
+
+let cneCall = function(id,msg){
     var toNumber = "+50688381241";
     if(id==1)toNumber = "+50688381241";
     else if(id==2)toNumber = "+50683465862";
@@ -198,7 +203,7 @@ var cneCall = function(id,msg){
 
     client.messages.create({
       to: toNumber,
-      from:"+13218042313",
+      from:configParams.twilioSender,
       body: msg,
     }, function(err, message) {
       if (err) {
@@ -212,25 +217,7 @@ var cneCall = function(id,msg){
 
 
 io.on('connection', function (socket) {
-	console.log(socket.client.conn.remoteAddress);
-	console.log('User Connected');
-	socket.on('user', function(msg){
-		var mensaje = msg.msg,
-			user = msg.user,
-			type = msg.type;
-		lastAlert=type;
-		var message = {full:msg,path:'', msg:mensaje, user:user, chat:true, type:type};
-		dbServices.insertMsg(message);
-		io.emit('message', message);
-		io.emit('full', message);
-	})
 
-	socket.on('officer', function(msg){
-		var message = {full:msg,path:'', msg:msg, user:'Officer', chat:true};
-		dbServices.insertMsg(message);
-		io.emit('message', message);
-		io.emit('full', message);
-	})
 
 	socket.on('alarm', function(msg){
 		msg = JSON.parse(msg);
@@ -248,10 +235,8 @@ io.on('connection', function (socket) {
 
 	socket.on('location', function(msg){
 		msg = JSON.parse(msg);
-		console.log(msg);
 		lastAlert=msg.type;
-		//basicCall(lastAlert);
-		// The topic name can be optionally prefixed with "/topics/".
+		basicCall(lastAlert);
 		var topic = msg.city;
 		var body = "Alerta de tipo "+msg.type;
 
@@ -318,7 +303,7 @@ io.on('connection', function (socket) {
 		require("fs").writeFile(pathSave, base64Data, 'base64', function(err) {
 		  console.log(err);
 		});
-		var pathImg = 'http://104.41.158.6:3000/img/uploads/'+now+'.jpg';
+		var pathImg = configParams.savingPath+now+'.jpg';
 		var message = {msg:pathImg, path:pathSave, img:true,type:lastAlert};
 		
 		msg['path'] = pathImg;
@@ -331,28 +316,44 @@ io.on('connection', function (socket) {
 
 	socket.on('rec', function(msg){
 	  msg = JSON.parse(msg);
-          var base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
-                  now = new Date() - firstDate,
-                  pathSave = 'webapp/webapp/img/uploads/'+now+'.3gpp';
+      let base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
+              now = new Date() - firstDate,
+              pathSave = 'webapp/webapp/img/uploads/'+now+'.3gpp';
 
-          require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
-            console.log(error);
-          });
+      require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
+        console.log(error);
+      });
 
-          var pathImg = 'http://104.41.158.6:3000/img/uploads/'+now+'.3gpp';
-	  var message = {msg:pathImg, path:pathSave, img:true};	
+      let pathImg = configParams.savingPath+now+'.3gpp';
+	  let message = {msg:pathImg, path:pathSave, img:true};	
 	  
 	  msg['path'] = pathImg;
-          azureServices.insertRec(msg);
-          io.emit('message', message);
-          io.emit('full', message); 
-        });
-	
-        socket.on('users', function(msg){
-                console.log(parseInt(msg));
+      azureServices.insertRec(msg);
+      io.emit('message', message);
+      io.emit('full', message); 
+    });
 
-                azureServices.getUser(msg,io);
-        })
+	socket.on('users', function(msg){
+            azureServices.getUser(msg,io);
+    })
+
+	/*socket.on('user', function(msg){
+		let mensaje = msg.msg,
+			user = msg.user,
+			type = msg.type;
+		lastAlert=type;
+		var message = {full:msg,path:'', msg:mensaje, user:user, chat:true, type:type};
+		dbServices.insertMsg(message);
+		io.emit('message', message);
+		io.emit('full', message);
+	})
+
+	socket.on('officer', function(msg){
+		var message = {full:msg,path:'', msg:msg, user:'Officer', chat:true};
+		dbServices.insertMsg(message);
+		io.emit('message', message);
+		io.emit('full', message);
+	})*/
 
 })
 
