@@ -1,7 +1,7 @@
 {
-	"twilioAccount":"ACb26ac3b02f8f99b038133a4a75b29b56",
-	"twilioToken":"6b96e1de386bde17238e384aee02257c",
-	"twilioSender":"+13218042313",
+	"twilioAccount":"AC02b501134032551b053d86aa6db211f7",
+	"twilioToken":"fcf43512e1b4ef88dafbf1d72828fcf5",
+	"twilioSender":"+14246723928",
 	"twilioReciever":"+50683459091",
 	"firebaseUrl":"https://soschat-6d3df.firebaseio.com",
 	"savingPath":"http://104.41.158.6:3000/img/uploads/",
