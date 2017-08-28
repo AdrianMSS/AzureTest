@@ -4,6 +4,26 @@ var azure = require('azure-storage'),
   firstDate = new Date(),
   key = '9L7x4RKyjNuxDWbrMFyWy9HxqiuIhSuvfQZcBZ9Wu/29HbHOey60CtYCPb+g6aIMjALN8Bd5AzJIfgDxKA4Huw==';
 
+const admin = require("firebase-admin");
+
+const serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: configParams.firebaseUrl
+});
+
+let firebaseTopic = function(topic, payload){
+    admin.messaging().sendToTopic(topic, payload)
+    .then(function(response) {
+      console.log("Successfully sent message:", response);
+  })
+  .catch(function(error) {
+      console.log("Error sending message:", error);
+  });
+}
+
+
 var todayChats = [];
 var tableSvc = azure.createTableService(name,key);
 
@@ -301,6 +321,20 @@ exports.insertLocation = function(msg, io){
   msg['parent'] = chatDate;
   newId = ''+newId;
   var userId = parseInt(msg.user);
+
+  let topic = msg.city;
+  let body = "Alerta de tipo "+req.body.type;
+
+  let payload = {
+    notification: {
+      title: "SOS App",
+      body: body,
+      report_id: newId
+    }
+  };
+
+  firebaseTopic(topic, payload);
+  
   io.emit('alert', msg);
   
   var chat = {
@@ -333,7 +367,7 @@ exports.insertLocation = function(msg, io){
   });
 }
 
-exports.newEmergency = function(req, res, callback){
+exports.newEmergency = function(req, res){
   var msg = req.body;
   var today = new Date().addHours(-6),
    chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
@@ -342,7 +376,20 @@ exports.newEmergency = function(req, res, callback){
   msg['parent'] = chatDate;
   newId = ''+newId;
   var userId = parseInt(msg.user);
-  callback(newId);
+
+  let topic = req.body.city;
+  let body = "Alerta de tipo "+req.body.type;
+  
+  let payload = {
+    notification: {
+      title: "SOS App",
+      body: body,
+      report_id: newId
+    }
+  };
+
+  firebaseTopic(topic, payload);
+
   res.send(200, msg);
   
   var chat = {

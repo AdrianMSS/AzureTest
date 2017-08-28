@@ -21,16 +21,6 @@ let firstDate = new Date(),
 let client = require('twilio')(accountSid, authToken); 
 let io = require('socket.io');
 
-const admin = require("firebase-admin");
-
-const serviceAccount = require("./serviceAccountKey.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: configParams.firebaseUrl
-});
-
-
 
 let app = express();
 app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
@@ -60,34 +50,10 @@ app.get('/now', azureServices.getNow);
 app.get('/barrios', azureServices.getBarrios);
 app.post('/signing',azureServices.signUser);
 
-
-let firebaseTopic = function(topic, payload){
-    admin.messaging().sendToTopic(topic, payload)
-	  .then(function(response) {
-	    console.log("Successfully sent message:", response);
-	})
-	.catch(function(error) {
-	    console.log("Error sending message:", error);
-	});
-}
-
 app.post('/emergency',function (req,res) {
-	let topic = req.body.city;
-	let body = "Alerta de tipo "+req.body.type;
 	basicCall(req.body.type);
 
-	// See the "Defining the message payload" section below for details
-	// on how to define a message payload.
-	let payload = {
-	  notification: {
-	    title: "SOS App",
-	    body: body 
-	  }
-	};
-
-	//firebaseTopic(topic, payload);
-
-	console.log(azureServices.newEmergency(req,res));
+	azureServices.newEmergency(req,res, to);
 });
 
 app.post('/alarm', function(req, res){
@@ -281,9 +247,6 @@ io.on('connection', function (socket) {
 		    body: body
 		  }
 		};
-
-		
-		firebaseTopic(topic, payload);
 
 		let message = {msg:msg, lat:msg.lat, long:msg.long, type:msg.type, position:msg.position, user:msg.user, city:msg.city};
 		azureServices.insertLocation(message, io);
