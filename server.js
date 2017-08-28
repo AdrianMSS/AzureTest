@@ -352,15 +352,15 @@ io.on('connection', function (socket) {
     	try{
     		console.log(msg);
 		  msg = JSON.parse(msg);
-	      let base64Data = msg.rec.replace(/^data:audio\/3gpp;base64,/, ""),
+	      let base64Data = msg.rec.replace(/^data:audio\/acc;base64,/, ""),
 	              now = new Date() - firstDate,
-	              pathSave = configParams.appPath+now+'.3gpp';
+	              pathSave = configParams.appPath+now+'.acc';
 
 	      require("fs").writeFile(pathSave, base64Data, 'base64', function(error){
 	        console.log(error);
 	      });
 
-	      let pathImg = configParams.savingPath+now+'.3gpp';
+	      let pathImg = configParams.savingPath+now+'.acc';
 		  let message = {msg:pathImg, path:pathSave, img:true, type:'rec'};	
 		  
 		  msg['path'] = pathImg;
