@@ -81,13 +81,15 @@ app.post('/emergency',function (req,res) {
 	let payload = {
 	  notification: {
 	    title: "SOS App",
-	    body: body
+	    body: body 
 	  }
 	};
 
-	firebaseTopic(topic, payload);
+	//firebaseTopic(topic, payload);
 
-	azureServices.newEmergency(req,res);
+	azureServices.newEmergency(function (req,res, callback){
+		console.log(callback);
+	};
 });
 
 app.post('/alarm', function(req, res){

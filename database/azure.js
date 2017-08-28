@@ -333,7 +333,7 @@ exports.insertLocation = function(msg, io){
   });
 }
 
-exports.newEmergency = function(req, res){
+exports.newEmergency = function(req, res, callback){
   var msg = req.body;
   var today = new Date().addHours(-6),
    chatDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(),
@@ -342,6 +342,7 @@ exports.newEmergency = function(req, res){
   msg['parent'] = chatDate;
   newId = ''+newId;
   var userId = parseInt(msg.user);
+  callback(newId);
   res.send(200, msg);
   
   var chat = {
