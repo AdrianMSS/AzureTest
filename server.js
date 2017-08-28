@@ -89,7 +89,7 @@ app.post('/emergency',function (req,res) {
 
 	azureServices.newEmergency(function (req,res, callback){
 		console.log(callback);
-	};
+	});
 });
 
 app.post('/alarm', function(req, res){
