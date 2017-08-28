@@ -300,7 +300,7 @@ io.on('connection', function (socket) {
 		  console.log(err);
 		});
 		let pathImg = configParams.savingPath+now+'.jpg';
-		let message = {msg:pathImg, path:pathSave, img:true,type:lastAlert, type:'img'};
+		let message = {msg:pathImg, path:pathSave, img:true,type:lastAlert, type:'img', id:msg.id};
 		
 		msg['path'] = pathImg;
 
@@ -324,7 +324,7 @@ io.on('connection', function (socket) {
 	      });
 
 	      let pathImg = configParams.savingPath+now+'.mp3';
-		  let message = {msg:pathImg, path:pathSave, img:true, type:'rec'};	
+		  let message = {msg:pathImg, path:pathSave, img:true, type:'rec', id:msg.id};	
 		  
 		  msg['path'] = pathImg;
 	      azureServices.insertRec(msg);
