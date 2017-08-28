@@ -2,6 +2,7 @@ var azure = require('azure-storage'),
   name = 'imaginexyzstorage',
   chatId = 1,
   firstDate = new Date(),
+  configParams = require('../config.json'),
   key = '9L7x4RKyjNuxDWbrMFyWy9HxqiuIhSuvfQZcBZ9Wu/29HbHOey60CtYCPb+g6aIMjALN8Bd5AzJIfgDxKA4Huw==';
 
 const admin = require("firebase-admin");
@@ -334,7 +335,7 @@ exports.insertLocation = function(msg, io){
   };
 
   firebaseTopic(topic, payload);
-  
+
   io.emit('alert', msg);
   
   var chat = {
