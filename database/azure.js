@@ -9,6 +9,8 @@ const admin = require("firebase-admin");
 
 const serviceAccount = require("./serviceAccountKey.json");
 
+console.log('firebase: ' + configParams.firebaseUrl);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: configParams.firebaseUrl
@@ -324,7 +326,7 @@ exports.insertLocation = function(msg, io){
   var userId = parseInt(msg.user);
 
   let topic = msg.city;
-  let body = "Alerta de tipo "+req.body.type;
+  let body = "Alerta de tipo "+msg.type;
 
   let payload = {
     notification: {
