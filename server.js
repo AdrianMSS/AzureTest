@@ -87,9 +87,7 @@ app.post('/emergency',function (req,res) {
 
 	//firebaseTopic(topic, payload);
 
-	azureServices.newEmergency(function (req,res, callback){
-		console.log(callback);
-	});
+	console.log(azureServices.newEmergency(req,res));
 });
 
 app.post('/alarm', function(req, res){
