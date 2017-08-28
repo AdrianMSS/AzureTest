@@ -53,7 +53,7 @@ app.post('/signing',azureServices.signUser);
 app.post('/emergency',function (req,res) {
 	basicCall(req.body.type);
 
-	azureServices.newEmergency(req,res, to);
+	azureServices.newEmergency(req,res);
 });
 
 app.post('/alarm', function(req, res){
