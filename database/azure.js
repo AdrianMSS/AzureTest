@@ -128,7 +128,7 @@ exports.signUser = function(req, res) {
       signed: {'_':true},
       dueDate: {'_':today, '$':'Edm.DateTime'}
     };
-  tableSvc.insertEntity('usersTable',updatedTask, function(error2, result2, response2){
+  tableSvc.insertEntity('usersTable',newUser, function(error2, result2, response2){
     if(!error2) {
       res.send(200, userId);
       userId++;
