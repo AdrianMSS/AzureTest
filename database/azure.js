@@ -116,9 +116,10 @@ exports.getToday = function(req, res) {
 
 exports.signUser = function(req, res) {
   var today = new Date().addHours(-6),
-     newUser = {
+    userString = ''+userId+'',
+    newUser = {
       PartitionKey: {'_':'1'},
-      RowKey: {'_': userId},
+      RowKey: {'_': userString},
       name: {'_':req.body.name},
       identificator: {'_':req.body.identificator},
       phone: {'_':req.body.phone},
