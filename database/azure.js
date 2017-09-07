@@ -3,6 +3,7 @@ var azure = require('azure-storage'),
   chatId = 1,
   firstDate = new Date(),
   configParams = require('../config.json'),
+  userId = 1,
   key = '9L7x4RKyjNuxDWbrMFyWy9HxqiuIhSuvfQZcBZ9Wu/29HbHOey60CtYCPb+g6aIMjALN8Bd5AzJIfgDxKA4Huw==';
 
 const admin = require("firebase-admin");
@@ -114,7 +115,26 @@ exports.getToday = function(req, res) {
 
 
 exports.signUser = function(req, res) {
-  var query = new azure.TableQuery()
+  var today = new Date().addHours(-6),
+     newUser = {
+      PartitionKey: {'_':'1'},
+      RowKey: {'_': userId},
+      name: {'_':req.body.name},
+      identificator: {'_':req.body.identificator},
+      phone: {'_':req.body.phone},
+      email: {'_':req.body.email},
+      code: {'_':req.body.code},
+      barrio: {'_':req.body.barrio},
+      signed: {'_':true},
+      dueDate: {'_':today, '$':'Edm.DateTime'}
+    };
+  tableSvc.insertEntity('usersTable',updatedTask, function(error2, result2, response2){
+    if(!error2) {
+      res.send(200, userId);
+      userId++;
+    }
+  });
+  /*var query = new azure.TableQuery()
     .where('identificator eq ?', [req.body.identificator] );
 
   tableSvc.queryEntities('usersTable',query, null, function(error, result, response){
@@ -154,8 +174,7 @@ exports.signUser = function(req, res) {
     else{
       res.send(400, error);
     }
-  });
-
+  });*/
 };
 
 exports.getNow = function(req, res) {
